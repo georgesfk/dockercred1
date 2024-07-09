@@ -11,25 +11,27 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the source code from your repository
-                git branch: 'main', url:'https://github.com/goreges/calculator.git', credentialsId: 'credentialgit'
+                git branch: 'main', url:'https://github.com/goreges/dockercred1.git', credentialsId: 'dockercred1'
             }
         }
 
         stage('Build') {
-            steps {
-                script {
-                    // Build the Docker image
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-                }
-            }
-        }
+                   steps {
+                       script {
+                            // Build .jar
+                           sh './mvnw clean package'
+                            // Build the Docker image
+                           sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                       }
+                   }
+               }
 
-        stage('Test') {
-            steps {
-                script {
-                    // Run your tests here
-                    // For example, you could run a container from the built image and execute tests inside it
-                    sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} your-test-command"
+               stage('Test') {
+                   steps {
+                       script {
+                           // Run your tests here
+                           // For example, you could run a container from the built image and execute tests inside it
+                           sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} "
                 }
             }
         }

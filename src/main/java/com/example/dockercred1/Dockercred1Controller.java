@@ -15,21 +15,21 @@ public class Dockercred1Controller {
 
     @GetMapping("/add")
     public double add(@RequestParam double a, @RequestParam double b) {
-        return dockercred1Service.add(a, b);
+        return dockercred1Service.add(a,b);
     }
 
     @GetMapping("/subtract")
     public double subtract(@RequestParam double a, @RequestParam double b) {
-        return dockercred1Service.subtract(a, b);
+        return dockercred1Service.subtract(a,b);
     }
 
     @GetMapping("/multiply")
     public double multiply(@RequestParam double a, @RequestParam double b) {
-        return dockercred1Service.multiply(a, b);
+        return dockercred1Service.multiply(a,b);
     }
 
     @GetMapping("/divide")
     public double divide(@RequestParam double a, @RequestParam double b) {
-        return dockercred1Service.divide(a, b);
+        return dockercred1Service.divide(a,b);
     }
 }

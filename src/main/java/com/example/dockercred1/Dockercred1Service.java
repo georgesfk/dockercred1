@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class Dockercred1Service {
-    public double add(double a, double b) {
-        return a + b;
+    public double add(double x, double y) {
+        return x + y;
     }
 
     public double subtract(double a, double b) {
