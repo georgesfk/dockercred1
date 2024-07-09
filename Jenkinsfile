@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         // Define environment variables if needed
-        DOCKER_IMAGE = "your-docker-image-name"
-        DOCKER_TAG = "latest"
+       // DOCKER_IMAGE = "myapp"
+       // DOCKER_TAG = "latest"
     }
 
     stages {
@@ -19,6 +19,7 @@ pipeline {
                    steps {
                        script {
                             // Build .jar
+                           sh 'chmod +x mvnw'
                            sh './mvnw clean package'
                             // Build the Docker image
                            sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
