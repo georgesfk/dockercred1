@@ -2,23 +2,43 @@ pipeline {
     agent any
 
     environment {
-        // Define environment variables if needed
-        DOCKER_IMAGE = "your-docker-image-name"
-        DOCKER_TAG = "latest"
+        DOCKER_IMAGE = 'my-docker-image'
+        DOCKER_TAG = 'latest'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the source code from your repository
-                git 'https://github.com/goreges/dockercred1.git'
+                script {
+                    echo 'Checking out the repository...'
+                    // Verify the repository URL and branch
+                    try {
+                        git(url: 'https://github.com/goreges/dockercred1.git', branch: 'main', credentialsId: 'dockercred1')
+                        echo 'Repository checkout successful.'
+                    } catch (Exception e) {
+                        echo "Error during checkout: ${e.message}"
+                        error "Failed to checkout repository."
+                    }
+                }
             }
         }
 
         stage('Build') {
             steps {
                 script {
-                    // Build the Docker image
+                    echo 'Listing files in the workspace...'
+                    sh 'ls -l'
+
+                    echo 'Adding execution permission to the mvnw script...'
+                    sh 'chmod +x ./mvnw'
+
+                    echo 'Running mvnw clean package...'
+                    sh './mvnw clean package'
+
+                    echo 'Listing files in the target directory...'
+                    sh 'ls -l target'
+
+                    echo 'Building Docker image...'
                     sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
@@ -27,9 +47,8 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Run your tests here
-                    // For example, you could run a container from the built image and execute tests inside it
-                    sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} your-test-command"
+                    echo 'Running Docker container to test the built image...'
+                    sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
@@ -37,9 +56,9 @@ pipeline {
         stage('Push') {
             steps {
                 script {
-                    // Use Docker credentials to log in and push the image
+                    echo 'Pushing Docker image to Docker Hub...'
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials-id', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        sh "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin"
+                        sh "echo \$DOCKER_HUB_PASSWORD | docker login -u \$DOCKER_HUB_USERNAME --password-stdin"
                         sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
@@ -49,8 +68,8 @@ pipeline {
 
     post {
         always {
-            // Cleanup
             script {
+                echo 'Cleaning up Docker image locally...'
                 sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
             }
         }
