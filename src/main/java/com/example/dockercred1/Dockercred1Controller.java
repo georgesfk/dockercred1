@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/dockercred")
+@RequestMapping("/dockercred1")
 public class Dockercred1Controller {
 
     @Autowired
