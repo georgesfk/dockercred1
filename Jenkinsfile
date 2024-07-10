@@ -11,7 +11,6 @@ pipeline {
             steps {
                 script {
                     echo 'Checking out the repository...'
-                    // Verify the repository URL and branch
                     try {
                         git(url: 'https://github.com/goreges/dockercred1.git', branch: 'main', credentialsId: 'dockercred1')
                         echo 'Repository checkout successful.'
@@ -19,6 +18,25 @@ pipeline {
                         echo "Error during checkout: ${e.message}"
                         error "Failed to checkout repository."
                     }
+                }
+            }
+        }
+
+        stage('Verify Docker') {
+            steps {
+                script {
+                    echo 'Verifying Docker installation...'
+                    sh 'docker --version'
+                    sh 'docker info'
+                }
+            }
+        }
+
+        stage('Verify mvnw') {
+            steps {
+                script {
+                    echo 'Checking mvnw script...'
+                    sh 'ls -l ./mvnw'
                 }
             }
         }
@@ -62,6 +80,14 @@ pipeline {
                         sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
+            }
+        }
+    }
+    stage('Print PATH') {
+        steps {
+            script {
+                echo 'Printing PATH...'
+                sh 'echo $PATH'
             }
         }
     }
