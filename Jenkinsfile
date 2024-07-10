@@ -1,54 +1,27 @@
 pipeline {
     agent any
     stages {
-        stage('Build') {
+        stage('Build Application') {
             steps {
-                docker {
-                    image 'my-docker-image'
-                    // ... rest of the pipeline ...
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/goreges/dockercred1.git', branch: 'main', credentialsId: 'dockercred1'
+                bat 'mvn clean install'
             }
         }
-
-        stage('Build') {
-            steps {
-                script {
-                    sh 'chmod +x mvnw'
-                    sh './mvnw clean package'
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-                }
-            }
-        }
-
         stage('Test') {
             steps {
-                script {
-                    sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} "
-                }
+                echo 'Application in Testing Phase…'
+                bat 'mvn test'
             }
         }
-
-        stage('Push') {
+        stage('Deploy CloudHub') {
+            environment {
+                ANYPOINT_CREDENTIALS = credentials('anypointPlatform')
+                ANYPOINT_CREDENTIALS_USR = "${ANYPOINT_CREDENTIALS_USR}"
+                ANYPOINT_CREDENTIALS_PSW = "${ANYPOINT_CREDENTIALS_PSW}"
+            }
             steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials-id', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        sh "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin"
-                        sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            script {
-                sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                echo 'Deploying mule project due to the latest code commit…'
+                echo 'Deploying to the configured environment….'
+                bat "mvn package deploy -DmuleDeploy -Dusername=${ANYPOINT_CREDENTIALS_USR} -Dpassword=${ANYPOINT_CREDENTIALS_PSW} -DworkerType=Micro -Dworkers=1 -Dregion=us-west-2"
             }
         }
     }
