@@ -21,8 +21,8 @@
         <developer/>
     </developers>
     <scm>
-        <connection>scm:git:https://github.com/goreges/dockercred.git</connection>
-        <developerConnection>scm:git:https://github.com/goreges/dockercred.git</developerConnection>
+        <connection>scm:git:https://github.com/goreges/dockercred1.git</connection>
+        <developerConnection>scm:git:https://github.com/goreges/dockercred1.git</developerConnection>
         <url>https://github.com/goreges/dockercred1</url>
 
     </scm>
