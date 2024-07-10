@@ -1,8 +1,11 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:latest'
-            args '-u root'
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                docker {
+                    image 'my-docker-image'
+                    // ... rest of the pipeline ...
     }
 
     stages {
