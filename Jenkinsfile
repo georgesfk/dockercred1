@@ -7,10 +7,10 @@ pipeline {
     }
 
     stages {
-        stage('Hello') {
+        stage('Checkout') {
             steps {
                 script {
-                    echo 'Hello World...'
+                    echo 'Checking out the repository...'
                     try {
                         git(url: 'https://github.com/goreges/dockercred1.git', branch: 'main', credentialsId: 'dockercred1')
                         echo 'Repository checkout successful.'
@@ -22,12 +22,15 @@ pipeline {
             }
         }
 
-        stage('Verify Docker') {
+        stage('Verify Environment') {
             steps {
                 script {
-                    echo 'Verifying Docker installation...'
+                    echo 'Verifying environment setup...'
+                    sh 'whoami'
+                    sh 'echo $PATH'
                     sh 'docker --version'
                     sh 'docker info'
+                    sh 'java -version'
                 }
             }
         }
@@ -37,6 +40,7 @@ pipeline {
                 script {
                     echo 'Checking mvnw script...'
                     sh 'ls -l ./mvnw'
+                    sh 'chmod +x ./mvnw'
                 }
             }
         }
@@ -46,9 +50,6 @@ pipeline {
                 script {
                     echo 'Listing files in the workspace...'
                     sh 'ls -l'
-
-                    echo 'Adding execution permission to the mvnw script...'
-                    sh 'chmod +x ./mvnw'
 
                     echo 'Running mvnw clean package...'
                     sh './mvnw clean package'
@@ -83,13 +84,12 @@ pipeline {
             }
         }
     }
-
     post {
-        always {
-            script {
-                echo 'Cleaning up Docker image locally...'
-                sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
+            always {
+                script {
+                    echo 'Cleaning up Docker image locally...'
+                    sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
             }
         }
     }
-}
