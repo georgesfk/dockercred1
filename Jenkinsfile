@@ -18,7 +18,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'chmod +x mvnw'
+                    sh 'chmod +x ./§mvnw'
                     sh './mvnw clean package'
                     sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
