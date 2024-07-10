@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'my-docker-image'
+        DOCKER_IMAGE = 'y-docker-image'
         DOCKER_TAG = 'latest'
     }
 
@@ -12,7 +12,7 @@ pipeline {
                 script {
                     echo 'Checking out the repository...'
                     try {
-                        git(url: 'https://github.com/goreges/dockercred1.git', branch: 'main', credentialsId: 'dockercred1')
+                        git(url: 'https://github.com/goreges/dockercred1.git', branch: 'ain', credentialsId: 'dockercred1')
                         echo 'Repository checkout successful.'
                     } catch (Exception e) {
                         echo "Error during checkout: ${e.message}"
@@ -39,8 +39,8 @@ pipeline {
             steps {
                 script {
                     echo 'Checking mvnw script...'
-                    sh 'ls -l ./mvnw'
-                    sh 'chmod +x ./mvnw'
+                    sh 'ls -l./mvnw'
+                    sh 'chmod +x./mvnw'
                 }
             }
         }
@@ -58,7 +58,7 @@ pipeline {
                     sh 'ls -l target'
 
                     echo 'Building Docker image...'
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG}."
                 }
             }
         }
@@ -77,7 +77,7 @@ pipeline {
                 script {
                     echo 'Pushing Docker image to Docker Hub...'
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials-id', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        sh "echo \$DOCKER_HUB_PASSWORD | docker login -u \$DOCKER_HUB_USERNAME --password-stdin"
+                        sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
                         sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
@@ -85,11 +85,11 @@ pipeline {
         }
     }
     post {
-            always {
-                script {
-                    echo 'Cleaning up Docker image locally...'
-                    sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                }
+        always {
+            script {
+                echo 'Cleaning up Docker image locally...'
+                sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
             }
         }
     }
+}
