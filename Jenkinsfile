@@ -2,54 +2,34 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'my-docker-image'
-        DOCKER_TAG = 'latest' // you can change this to a specific tag
+        // Define environment variables if needed
+        DOCKER_IMAGE = "your-docker-image-name"
+        DOCKER_TAG = "latest"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                script {
-                    echo 'Checking out the repository...'
-                    git(url: 'https://github.com/goreges/dockercred1.git', branch: 'main', credentialsId: 'dockercred1')
-                }
+                // Checkout the source code from your repository
+                git 'https://github.com/your-repo.git'
             }
         }
-        stage('Verify Docker') {
-            steps {
-              script {
-            echo 'Verifying Docker installation...'
-            sh 'docker --version'
-            sh 'docker info'
-        }
-    }
-}
+
         stage('Build') {
             steps {
                 script {
-                    echo 'Listing files in the workspace...'
-                    sh 'ls -l'
-
-                    echo 'Adding execution permission to the mvnw script...'
-                    sh 'chmod +x ./mvnw'
-
-                    echo 'Running mvnw clean package...'
-                    sh './mvnw clean package'
-
-                    echo 'Listing files in the target directory...'
-                    sh 'ls -l target'
-
-                    echo 'Building Docker image...'
+                    // Build the Docker image
                     sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Test') {
             steps {
                 script {
-                    echo 'Running Docker container to test the built image...'
-                    sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    // Run your tests here
+                    // For example, you could run a container from the built image and execute tests inside it
+                    sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} your-test-command"
                 }
             }
         }
@@ -57,9 +37,9 @@ pipeline {
         stage('Push') {
             steps {
                 script {
-                    echo 'Pushing Docker image to Docker Hub...'
+                    // Use Docker credentials to log in and push the image
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials-id', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        sh "echo \$DOCKER_HUB_PASSWORD | docker login -u \$DOCKER_HUB_USERNAME --password-stdin"
+                        sh "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin"
                         sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
@@ -69,8 +49,8 @@ pipeline {
 
     post {
         always {
+            // Cleanup
             script {
-                echo 'Cleaning up Docker image locally...'
                 sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
             }
         }
