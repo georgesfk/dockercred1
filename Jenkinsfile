@@ -9,78 +9,53 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                script {
-                    echo 'Checking out the repository...'
-                    try {
-                        git url: 'https://github.com/goreges/dockercred1.git', branch: 'main', credentialsId: 'dockercred1'
-                        echo 'Repository checkout successful.'
-                    } catch (Exception e) {
-                        echo "Error during checkout: ${e.message}"
-                        error "Failed to checkout repository."
-                    }
-                }
+                git url: 'https://github.com/goreges/dockercred1.git', branch: 'main', credentialsId: 'dockercred1'
             }
         }
 
         stage('Verify Environment') {
             steps {
-                script {
-                    echo 'Verifying environment setup...'
-                    sh 'whoami'
-                    sh 'echo $PATH'
-                    sh 'which docker || echo "Docker not found"'
-                    sh 'docker --version || echo "Docker version not found"'
-                    sh 'docker info || echo "Docker info not available"'
-                    sh 'java -version || echo "Java not found"'
-                }
+                sh 'whoami'
+                sh 'echo $PATH'
+                sh 'which docker'
+                sh 'docker --version'
+                sh 'docker info'
+                sh 'java -version'
             }
         }
 
         stage('Verify mvnw') {
             steps {
-                script {
-                    echo 'Checking mvnw script...'
-                    sh 'ls -l ./mvnw || echo "mvnw script not found"'
-                    sh 'chmod +x ./mvnw || echo "Failed to make mvnw executable"'
-                }
+                sh 'ls -l ./mvnw'
+                sh 'chmod +x ./mvnw'
             }
         }
 
         stage('Build') {
             steps {
-                script {
-                    echo 'Listing files in the workspace...'
-                    sh 'ls -l'
+                sh 'ls -l'
+                sh './mvnw clean package'
+                sh 'ls -l target'
+            }
+        }
 
-                    echo 'Running mvnw clean package...'
-                    sh './mvnw clean package || echo "Failed to run mvnw clean package"'
-
-                    echo 'Listing files in the target directory...'
-                    sh 'ls -l target || echo "Target directory not found"'
-
-                    echo 'Building Docker image...'
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} . || echo 'Failed to build Docker image'"
-                }
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
             }
         }
 
         stage('Test') {
             steps {
-                script {
-                    echo 'Running Docker container to test the built image...'
-                    sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} || echo 'Failed to run Docker container'"
-                }
+                sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
             }
         }
 
         stage('Push') {
             steps {
-                script {
-                    echo 'Pushing Docker image to Docker Hub...'
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials-id', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        sh "echo \$DOCKER_HUB_PASSWORD | docker login -u \$DOCKER_HUB_USERNAME --password-stdin || echo 'Failed to login to Docker Hub'"
-                        sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG} || echo 'Failed to push Docker image'"
-                    }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials-id', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                    sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
+                    sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
@@ -88,10 +63,7 @@ pipeline {
 
     post {
         always {
-            script {
-                echo 'Cleaning up Docker image locally...'
-                sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG} || echo 'Failed to remove Docker image'"
-            }
+            sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG} || echo 'Failed to remove Docker image'"
         }
     }
 }
