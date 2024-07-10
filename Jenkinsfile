@@ -78,7 +78,7 @@ pipeline {
                 script {
                     echo 'Pushing Docker image to Docker Hub...'
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials-id', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin || echo 'Failed to login to Docker Hub'"
+                        sh "echo \$DOCKER_HUB_PASSWORD | docker login -u \$DOCKER_HUB_USERNAME --password-stdin || echo 'Failed to login to Docker Hub'"
                         sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG} || echo 'Failed to push Docker image'"
                     }
                 }
@@ -94,4 +94,4 @@ pipeline {
             }
         }
     }
-}}
+}
