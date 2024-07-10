@@ -1,9 +1,8 @@
 pipeline {
-    agent any
-
-    environment {
-        DOCKER_IMAGE = "myapp"
-        DOCKER_TAG = "latest"
+    agent {
+        docker {
+            image 'docker:latest'
+            args '-u root'
     }
 
     stages {
