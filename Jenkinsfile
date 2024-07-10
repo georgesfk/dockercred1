@@ -1,11 +1,9 @@
 pipeline {
     agent any
-    stages {
-        stage('Build') {
-            steps {
-                docker {
-                    image 'my-docker-image'
-                    // ... rest of the pipeline ...
+
+    environment {
+        DOCKER_IMAGE = 'my-docker-image'
+        DOCKER_TAG = 'latest' // you can change this to a specific tag
     }
 
     stages {
@@ -18,7 +16,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'chmod +x ./§mvnw'
+                    sh 'chmod +x ./mvnw'
                     sh './mvnw clean package'
                     sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
@@ -28,7 +26,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} "
+                    sh "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
