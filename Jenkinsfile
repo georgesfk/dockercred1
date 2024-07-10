@@ -1,10 +1,12 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = 'my-docker-image'
-        DOCKER_TAG = 'latest'
-    }
+    stages {
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker --version'
+                sh 'docker build -t my-docker-image:latest.'
+            }
 
     stages {
         stage('Checkout') {
