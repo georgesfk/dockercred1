@@ -7,10 +7,10 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('Hello') {
             steps {
                 script {
-                    echo 'Checking out the repository...'
+                    echo 'Hello World...'
                     try {
                         git(url: 'https://github.com/goreges/dockercred1.git', branch: 'main', credentialsId: 'dockercred1')
                         echo 'Repository checkout successful.'
@@ -80,14 +80,6 @@ pipeline {
                         sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
-            }
-        }
-    }
-    stage('Print PATH') {
-        steps {
-            script {
-                echo 'Printing PATH...'
-                sh 'echo $PATH'
             }
         }
     }
