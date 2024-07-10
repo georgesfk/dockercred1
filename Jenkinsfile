@@ -84,12 +84,13 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            script {
-                echo 'Cleaning up Docker image locally...'
-                sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
+    stage('Post Actions') {
+                steps {
+                    script {
+                        echo 'Cleaning up Docker image locally...'
+                        sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    }
+                }
             }
         }
     }
-}
