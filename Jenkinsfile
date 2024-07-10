@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         // Define environment variables if needed
-       DOCKER_IMAGE = "myapp"
-        DOCKER_TAG = "latest"
+       //DOCKER_IMAGE = "myapp"
+        //DOCKER_TAG = "latest"
     }
 
     stages {
