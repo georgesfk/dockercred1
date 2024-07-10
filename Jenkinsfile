@@ -12,7 +12,7 @@ pipeline {
                 script {
                     echo 'Checking out the repository...'
                     try {
-                        git(url: 'https://github.com/goreges/dockercred1.git', branch: 'ain', credentialsId: 'dockercred1')
+                        git(url: 'https://github.com/goreges/dockercred1.git', branch: 'main', credentialsId: 'dockercred1')
                         echo 'Repository checkout successful.'
                     } catch (Exception e) {
                         echo "Error during checkout: ${e.message}"
