@@ -15,7 +15,15 @@ pipeline {
                 }
             }
         }
-
+        stage('Verify Docker') {
+            steps {
+              script {
+            echo 'Verifying Docker installation...'
+            sh 'docker --version'
+            sh 'docker info'
+        }
+    }
+}
         stage('Build') {
             steps {
                 script {
