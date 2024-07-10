@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the source code from your repository
-                git 'https://github.com/your-repo.git'
+                git 'https://github.com/goreges/dockercred1.git'
             }
         }
 
