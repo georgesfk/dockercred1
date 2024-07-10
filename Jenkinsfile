@@ -3,7 +3,11 @@ pipeline {
 
     environment {
         // Define environment variables if needed
+<<<<<<< HEAD
       // DOCKER_IMAGE = "myapp"
+=======
+       //DOCKER_IMAGE = "myapp"
+>>>>>>> 0ff0d217bdaf6ca6841cd594a71ce0382c174d23
         //DOCKER_TAG = "latest"
     }
 
