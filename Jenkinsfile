@@ -45,7 +45,7 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Deploy') {
             steps {
                 script {
                     echo 'Running Docker container to test the built image...'
